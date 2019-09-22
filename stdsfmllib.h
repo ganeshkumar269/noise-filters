@@ -10,4 +10,5 @@
     bool maxFilter(sf::Image& ,unsigned int =3,sf::IntRect = {-1,-1,-1,-1});
     bool minFilter(sf::Image& ,unsigned int =3,sf::IntRect = {-1,-1,-1,-1});
     bool medianFilter(sf::Image& , unsigned int = 3, sf::IntRect = {-1,-1,-1,-1});
+    bool gaussianNoiseAdder(sf::Image& ,sf::IntRect = {-1,-1,-1,-1});
 #endif

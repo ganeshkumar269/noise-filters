@@ -5,6 +5,7 @@
 #include "stdsfmllib.h"
 #include <Eigen/Dense>
 #include <algorithm>
+#include "dependencies/gaussian_distribution.cpp"
 bool rgbToGray(sf::Image& image, sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
@@ -150,5 +151,34 @@ bool medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     return true;
 }
 
-
+bool gaussianNoiseAdder(sf::Image& image,sf::IntRect dimension){
+    if(dimension.height == -1 or dimension.width == -1){
+        dimension.height = image.getSize().y;
+        dimension.width = image.getSize().x;
+        dimension.left = dimension.top = 0;
+    }
+    std::cout<< dimension.top << " " << dimension.height << " " << dimension.left << " " << dimension.width <<std::endl;
+    unsigned int height = dimension.top + dimension.height , width = dimension.width + dimension.left;
+    Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height,dimension.width);
+    for(unsigned int i = dimension.left ; i < width; i++)
+        for(unsigned int j = dimension.top ; j < height ; j++)
+            image_matrix(j,i) = image.getPixel(j,i).r; 
+    float mean = image_matrix.mean();
+    std::cout<<"Mean "<<mean<<std::endl;
+    Eigen::MatrixXd mean_matrix  = Eigen::MatrixXd::Constant(dimension.height,dimension.width,mean); 
+    std::cout<<"Mean matrrix created "<< std::endl;
+    Eigen::MatrixXd diff_matrix = image_matrix - mean_matrix;
+    std::cout<< "Diff Matrix Created " << std::endl;
+    float variance = (diff_matrix.transpose()*diff_matrix).diagonal().sum() / (dimension.height*dimension.width);
+    std::cout<< "Variance: " << variance << std::endl;
+    Eigen::MatrixXf gaussian_noise = Eigen::Map<Eigen::Matrix<float,6000,6000>>(
+                mystdlib::gaussian_distribution(mean,variance,dimension.height*dimension.width).data());
+    gaussian_noise.resize(dimension.height,dimension.width);
+    std::cout<<"Noise Mean: "<<gaussian_noise.mean()<<std::endl;
+    for(unsigned int i = dimension.left ; i < width; i++)
+        for(unsigned int j = dimension.top ; j < height ; j++)
+            image.setPixel(j,i,sf::Color(image.getPixel(j,i).r + (int)gaussian_noise(j,i),
+                            image.getPixel(j,i).r + (int)gaussian_noise(j,i),image.getPixel(j,i).r + (int)gaussian_noise(j,i))); 
+    return true;
+}
 

@@ -90,7 +90,7 @@ int main(){
                         std::cout<<"Time taken for Median filter:";
                     } else if(box.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
-                        boxFilter(tmp,boxSize);
+                        gaussianNoiseAdder(tmp);
                         std::cout<<"Time taken for Box filter:";
                     } else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
                         prevSize = boxSize;
