@@ -1,0 +1,8 @@
+Hello, World!
+Image size : 652 680
+orgImage converted to gray in : Window Opened
+0 680 0 652
+Mean 163.344
+Mean matrrix created 
+Diff Matrix Created 
+Variance: 1794.71

@@ -6,8 +6,7 @@
                 "${workspaceFolder}/**",
                 "${vcpkgRoot}/x64-windows/include",
                 "${vcpkgRoot}/x86-windows/include",
-                "C:/SFML-2.5.1/include",
-                "C:/LIBRARIES"
+                "${workspaceFolder}/dependencies/**"
             ],
             "defines": [
                 "_DEBUG",

@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #ifndef _GLIBCXX_IOSTREAM
     #include<iostream>
 #endif
@@ -15,9 +15,8 @@ bool rgbToGray(sf::Image& image, sf::IntRect dimension){
     for(unsigned int i = dimension.top ;i <  dimension.top + dimension.height; i++)
         for(unsigned int j = dimension.left ; j <  dimension.left + dimension.width ; j++){
             if(j >= image.getSize().x or i >= image.getSize().y)
-                std::cout<<"Error: Exceeds Image bounds"<<std::endl;
+                return false;
             else{
-                if(j > 650 and i > 650) std::cout<<j<<" "<<i<<std::endl;
                 sf::Color pixel = image.getPixel(j,i);
                 float gray_value_float = (float)0.3*pixel.r 
                         + (float)0.59*pixel.b + (float)0.11*pixel.g ;
@@ -118,12 +117,35 @@ bool minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(t,t,t,255));
     }
-    for(unsigned int i = int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
+    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(imageMatrix(j,i),imageMatrix(j,i),imageMatrix(j,i),255));
     return true;
 }
+
+
+bool meanFilter(sf::Image& image,uint32_t boxSize, sf::IntRect dimension){
+    if(dimension.height == -1 or dimension.width == -1){
+        dimension.width = image.getSize().x;
+        dimension.height = image.getSize().y;
+        dimension.top = dimension.left = 0;
+    }
+    unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
+    Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height + boxSize + 1,dimension.width + boxSize + 1);
+    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
+        image_matrix(i,j) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r; 
+    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
+        long mean = image_matrix.block(i - int(boxSize/2), j - int(boxSize/2),boxSize,boxSize).mean();
+        image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
+                        sf::Color(mean,mean,mean,255));
+    }
+    return true;
+}
+
+
 
 bool medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
@@ -151,7 +173,7 @@ bool medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     return true;
 }
 
-bool gaussianNoiseAdder(sf::Image& image,sf::IntRect dimension){
+bool gaussianNoiseAdder(sf::Image& image,float mean,float variance,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -162,23 +184,27 @@ bool gaussianNoiseAdder(sf::Image& image,sf::IntRect dimension){
     Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height,dimension.width);
     for(unsigned int i = dimension.left ; i < width; i++)
         for(unsigned int j = dimension.top ; j < height ; j++)
-            image_matrix(j,i) = image.getPixel(j,i).r; 
-    float mean = image_matrix.mean();
-    std::cout<<"Mean "<<mean<<std::endl;
-    Eigen::MatrixXd mean_matrix  = Eigen::MatrixXd::Constant(dimension.height,dimension.width,mean); 
-    std::cout<<"Mean matrrix created "<< std::endl;
-    Eigen::MatrixXd diff_matrix = image_matrix - mean_matrix;
-    std::cout<< "Diff Matrix Created " << std::endl;
-    float variance = (diff_matrix.transpose()*diff_matrix).diagonal().sum() / (dimension.height*dimension.width);
-    std::cout<< "Variance: " << variance << std::endl;
-    Eigen::MatrixXf gaussian_noise = Eigen::Map<Eigen::Matrix<float,6000,6000>>(
-                mystdlib::gaussian_distribution(mean,variance,dimension.height*dimension.width).data());
-    gaussian_noise.resize(dimension.height,dimension.width);
-    std::cout<<"Noise Mean: "<<gaussian_noise.mean()<<std::endl;
-    for(unsigned int i = dimension.left ; i < width; i++)
-        for(unsigned int j = dimension.top ; j < height ; j++)
-            image.setPixel(j,i,sf::Color(image.getPixel(j,i).r + (int)gaussian_noise(j,i),
-                            image.getPixel(j,i).r + (int)gaussian_noise(j,i),image.getPixel(j,i).r + (int)gaussian_noise(j,i))); 
+            image_matrix(j,i) = image.getPixel(i,j).r; 
+    // float mean = image_matrix.mean();
+    // Eigen::MatrixXd mean_matrix  = Eigen::MatrixXd::Constant(dimension.height,dimension.width,mean); 
+    // Eigen::MatrixXd diff_matrix = image_matrix - mean_matrix;
+    // float variance = (diff_matrix.transpose()*diff_matrix).diagonal().sum() / (dimension.height*dimension.width);
+    std::vector<float> gaussian_noise = mystdlib::gaussian_distribution(mean,variance,dimension.height*dimension.width);
+    unsigned int t =0 ;
+    for(unsigned int  j=dimension.top ; j <  height ; j++)
+        for(unsigned int i = dimension.left; i < width ; i++,t++){
+            std::tuple<int,int,int> color=  std::make_tuple(image.getPixel(i,j).r + (int)gaussian_noise[t],
+                            image.getPixel(i,j).r + (int)gaussian_noise[t],image.getPixel(i,j).r + (int)gaussian_noise[t]);
+    
+            if(std::get<0>(color) < 0 ) std::get<0>(color) = 0;
+            else if(std::get<0>(color) > 255) std::get<0>(color) = 255;
+            if(std::get<1>(color) < 0 ) std::get<1>(color) = 0;
+            else if(std::get<1>(color) > 255) std::get<1>(color) = 255;
+            if(std::get<2>(color) < 0 ) std::get<2>(color) = 0;
+            else if(std::get<2>(color) > 255) std::get<2>(color) = 255;
+            
+            image.setPixel(i,j,sf::Color(std::get<0>(color),std::get<1>(color),std::get<2>(color)));
+        } 
     return true;
 }
 

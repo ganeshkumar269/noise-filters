@@ -1,18 +1,18 @@
-#include<SFML/Graphics.hpp>
+#include "SFML/Graphics.hpp"
 #include<iostream>
-#include "d:\mytimer.cpp"
+#include "mytimer.cpp"
 #include "stdsfmllib.h"
 int main(){
     std::cout<<"Hello, World!"<<std::endl;
-    sf::RenderWindow window(sf::VideoMode(300,400),"New Window",sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(300,500),"New Window",sf::Style::Default);
     window.setFramerateLimit((unsigned int) (60));
     sf::RectangleShape rectangle(sf::Vector2f(30,30));
     sf::Vector2u windowSize = {300,300};
     sf::Sprite sprite;
     sf::Texture texture;
-    sf::Image image;
+    sf::Image image,refImage;
     sf::Image orgImage;
-    sf::Text max,min,median,box;
+    sf::Text max,min,median,box,gauss,reset;
     sf::Font MontserratBold;
     MontserratBold.loadFromFile("Fonts/Montserrat-Bold.otf");
     max.setString("Max Filter");
@@ -39,10 +39,28 @@ int main(){
     box.setCharacterSize(25);
     box.setPosition(150,350);
 
-    if (!image.loadFromFile("./lil_owl.jpg"))
+    gauss.setString("Gauss");
+    gauss.setFont(MontserratBold);
+    gauss.setFillColor(sf::Color::White);
+    gauss.setCharacterSize(25);
+    gauss.setPosition(0,400);
+
+    reset.setString("Reset");
+    reset.setFont(MontserratBold);
+    reset.setFillColor(sf::Color::White);
+    reset.setCharacterSize(25);
+    reset.setPosition(150,400);
+
+    if (!image.loadFromFile("./parking_lot.jpg"))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     orgImage = image;
+    refImage = image;
+    {
+        Timer timer;
+        rgbToGray(orgImage);
+        std::cout << "orgImage converted to gray in : ";
+    }
     unsigned int boxSize = 3;
     unsigned int prevSize = 3;
     std::cout<<"Window Opened"<<std::endl;
@@ -78,19 +96,29 @@ int main(){
                     tmp = orgImage;
                     if(max.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
+                        std::cout<<"Filter Started."<<std::endl;
                         maxFilter(tmp,boxSize);
                         std::cout<<"Time taken for Max filter:";
                     } else if(min.getGlobalBounds().contains(translatedPos)and flag){
                         Timer timer;
+                        std::cout<<"Filter Started."<<std::endl;
                         minFilter(tmp,boxSize);
                         std::cout<<"Time taken for Min filter:";
                     } else if(median.getGlobalBounds().contains(translatedPos)and flag){
                         Timer timer;
-                        medianFilter(tmp,boxSize);
+                        std::cout<<"Filter Started."<<std::endl;
+                        meanFilter(tmp,boxSize);
                         std::cout<<"Time taken for Median filter:";
                     } else if(box.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
-                        gaussianNoiseAdder(tmp);
+                        std::cout<<"Filter Started."<<std::endl;
+                        boxFilter(tmp,boxSize);
+                        std::cout<<"Time taken for Box filter:";
+                    } else if(gauss.getGlobalBounds().contains(translatedPos) and flag){
+                        Timer timer;
+                        std::cout<<"Filter Started."<<std::endl;
+                        gaussianNoiseAdder(tmp,40,5);
+                        orgImage = tmp;
                         std::cout<<"Time taken for Box filter:";
                     } else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
                         prevSize = boxSize;
@@ -99,6 +127,8 @@ int main(){
                         else
                             boxSize += 2;
                         std::cout<<"Box Size: "<<boxSize<<std::endl;
+                    } else if(reset.getGlobalBounds().contains(translatedPos) and flag){
+                        orgImage = refImage;
                     } else if(flag){
                         std::cout<<"Out of Bounds Click"<<std::endl;
                     }
@@ -114,6 +144,8 @@ int main(){
         window.draw(min);
         window.draw(median);
         window.draw(box);
+        window.draw(gauss);
+        window.draw(reset);
         window.display();
     }
     return 0;
