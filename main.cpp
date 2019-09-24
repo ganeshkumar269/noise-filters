@@ -52,7 +52,9 @@ int main(int argc,char** argv){
     reset.setCharacterSize(25);
     reset.setPosition(150,400);
 
-    if (!image.loadFromFile("./lil_owl.jpg"))
+    std::string file_name;
+    file_name = argc == 1 ? "lil_owl.jpg" : argv[1]; 
+    if (!image.loadFromFile(file_name.c_str()))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     orgImage = image;
