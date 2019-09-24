@@ -1,8 +1,9 @@
 #include "SFML/Graphics.hpp"
-#include<iostream>
+#include <iostream>
 #include "mytimer.cpp"
-#include "stdsfmllib.h"
-int main(){
+#include "mysf.h"
+#include "filters.h"
+int main(int argc,char** argv){
     std::cout<<"Hello, World!"<<std::endl;
     sf::RenderWindow window(sf::VideoMode(300,500),"New Window",sf::Style::Default);
     window.setFramerateLimit((unsigned int) (60));
@@ -51,14 +52,15 @@ int main(){
     reset.setCharacterSize(25);
     reset.setPosition(150,400);
 
-    if (!image.loadFromFile("./parking_lot.jpg"))
+    if (!image.loadFromFile("./lil_owl.jpg"))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     orgImage = image;
     refImage = image;
     {
         Timer timer;
-        rgbToGray(orgImage);
+        mysf::rgbToGray(orgImage);
+        mysf::rgbToGray(refImage);
         std::cout << "orgImage converted to gray in : ";
     }
     unsigned int boxSize = 3;
