@@ -175,8 +175,8 @@ int main(int argc,char** argv){
         window.draw(gauss);
         window.draw(reset);
         window.draw(mono);
-        window.draw(arrow_right);
-        window.draw(arrow_left);
+        // window.draw(arrow_right);
+        // window.draw(arrow_left);
         window.display();
     }
     return 0;
