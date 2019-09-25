@@ -88,7 +88,6 @@ int main(int argc,char** argv){
         std::cout << "orgImage converted to gray in : ";
     }
     unsigned int boxSize = 3;
-    unsigned int prevSize = 3;
     std::cout<<"Window Opened"<<std::endl;
 
 
@@ -146,7 +145,6 @@ int main(int argc,char** argv){
                         orgImage = tmp;
                         std::cout<<"Time taken for Box filter:";
                     } else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
-                        prevSize = boxSize;
                         if(mousePosition.x < 150)
                             boxSize = boxSize < 5 ? 3 : boxSize - 2;
                         else
