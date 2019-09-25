@@ -18,8 +18,19 @@ int main(int argc,char** argv){
     sf::Image orgImage;
     sf::Text max,min,median,box,gauss,reset,mono;
     sf::Font MontserratBold;
-    MontserratBold.loadFromFile("Fonts/Montserrat-Bold.otf");
-
+    if(argc == 1){
+        std::cout<<"Too few arguments, proper command is --main.exe path_to_image path_to_font";
+        exit(0);
+    }
+    std::string path_to_image;
+    std::string path_to_font;
+    if(std::string(argv[1]) == "-d"){
+        path_to_image = "./resources/car.jpg"
+        path_to_font = "Fonts/Montserrat-Bold.otf";
+    } else {
+        path_to_image = argv[1];
+        path_to_font = argv[2];
+    }
     max.setString("Max Filter");
     max.setFont(MontserratBold);
     max.setFillColor(sf::Color::White);
@@ -62,9 +73,9 @@ int main(int argc,char** argv){
     reset.setCharacterSize(25);
     reset.setPosition(0,450);
 
-    std::string file_name;
-    file_name = argc == 1 ? "./resources/car.jpg" : argv[1]; 
-    if (!image.loadFromFile(file_name.c_str()))
+    if(!MontserratBold.loadFromFile(path_to_font.c_str()))
+        std::cout<<"Filed to load Font"<<std::endl;
+    if (!image.loadFromFile(path_to_image.c_str()))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     
