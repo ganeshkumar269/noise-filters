@@ -25,7 +25,7 @@ int main(int argc,char** argv){
     std::string path_to_image;
     std::string path_to_font;
     if(std::string(argv[1]) == "-d"){
-        path_to_image = "./resources/car.jpg"
+        path_to_image = "./resources/car.jpg";
         path_to_font = "Fonts/Montserrat-Bold.otf";
     } else {
         path_to_image = argv[1];
