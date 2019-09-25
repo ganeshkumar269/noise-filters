@@ -63,14 +63,14 @@ int main(int argc,char** argv){
     reset.setPosition(0,450);
 
     std::string file_name;
-    file_name = argc == 1 ? "car.jpg" : argv[1]; 
+    file_name = argc == 1 ? "./resources/car.jpg" : argv[1]; 
     if (!image.loadFromFile(file_name.c_str()))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     
 
 
-    if(!arrow_texture.loadFromFile("arrow_right.jpg"))
+    if(!arrow_texture.loadFromFile("./resources/arrow_right.jpg"))
         std::cout << "Error loading arrow texture " << std::endl;
     arrow_right.setTexture(arrow_texture);
     arrow_right.setScale(75/arrow_right.getLocalBounds().width , 50/arrow_right.getLocalBounds().height);
