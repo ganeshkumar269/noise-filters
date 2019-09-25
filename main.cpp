@@ -10,12 +10,16 @@ int main(int argc,char** argv){
     sf::RectangleShape rectangle(sf::Vector2f(30,30));
     sf::Vector2u windowSize = {300,300};
     sf::Sprite sprite;
+    sf::Sprite arrow_left,arrow_right;
+    sf::Texture arrow_texture;
+    sf::Image arrow_image;
     sf::Texture texture;
     sf::Image image,refImage;
     sf::Image orgImage;
-    sf::Text max,min,median,box,gauss,reset;
+    sf::Text max,min,median,box,gauss,reset,mono;
     sf::Font MontserratBold;
     MontserratBold.loadFromFile("Fonts/Montserrat-Bold.otf");
+
     max.setString("Max Filter");
     max.setFont(MontserratBold);
     max.setFillColor(sf::Color::White);
@@ -46,17 +50,35 @@ int main(int argc,char** argv){
     gauss.setCharacterSize(25);
     gauss.setPosition(0,400);
 
+    mono.setString("Mono");
+    mono.setFont(MontserratBold);
+    mono.setFillColor(sf::Color::White);
+    mono.setCharacterSize(25);
+    mono.setPosition(150,400);
+
     reset.setString("Reset");
     reset.setFont(MontserratBold);
     reset.setFillColor(sf::Color::White);
     reset.setCharacterSize(25);
-    reset.setPosition(150,400);
+    reset.setPosition(0,450);
 
     std::string file_name;
-    file_name = argc == 1 ? "lil_owl.jpg" : argv[1]; 
+    file_name = argc == 1 ? "car.jpg" : argv[1]; 
     if (!image.loadFromFile(file_name.c_str()))
         std::cout<<"Error in opening Image"<<std::endl;
     std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
+    
+
+
+    if(!arrow_texture.loadFromFile("arrow_right.jpg"))
+        std::cout << "Error loading arrow texture " << std::endl;
+    arrow_right.setTexture(arrow_texture);
+    arrow_right.setScale(75/arrow_right.getLocalBounds().width , 50/arrow_right.getLocalBounds().height);
+    arrow_right.setPosition(225,450);
+    arrow_right.setOrigin(arrow_right.getGlobalBounds().width/2 ,arrow_right.getGlobalBounds().height/2);
+    arrow_left = arrow_right;
+    arrow_left.rotate(180);
+
     orgImage = image;
     refImage = image;
     {
@@ -97,7 +119,6 @@ int main(int argc,char** argv){
                         flag = true;
                         clock.restart();
                     } else continue;
-                    tmp = orgImage;
                     if(max.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
@@ -132,8 +153,13 @@ int main(int argc,char** argv){
                             boxSize += 2;
                         std::cout<<"Box Size: "<<boxSize<<std::endl;
                     } else if(reset.getGlobalBounds().contains(translatedPos) and flag){
-                        orgImage = refImage;
-                    } else if(flag){
+                        std::cout<<"Resetting to original gray image."<<std::endl;
+                        tmp = refImage;
+                    }else if(mono.getGlobalBounds().contains(translatedPos) and flag){ 
+                        std::cout<<"Converting to Mono"<<std::endl;
+                        mysf::rgbToGray(tmp);
+                        mysf::grayToMono(tmp,mysf::mean(tmp));
+                    }else if(flag){
                         std::cout<<"Out of Bounds Click"<<std::endl;
                     }
                 }
@@ -150,6 +176,9 @@ int main(int argc,char** argv){
         window.draw(box);
         window.draw(gauss);
         window.draw(reset);
+        window.draw(mono);
+        window.draw(arrow_right);
+        window.draw(arrow_left);
         window.display();
     }
     return 0;

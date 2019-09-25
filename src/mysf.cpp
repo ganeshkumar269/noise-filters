@@ -48,7 +48,7 @@ bool grayToMono(sf::Image& image, unsigned int threshold,sf::IntRect dimension){
     return true;
 }
 
-double sfml_mean(sf::Image& image, sf::IntRect dimension){
+double mean(sf::Image& image, sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
             dimension.height = image.getSize().y;
             dimension.width = image.getSize().x;
@@ -62,7 +62,7 @@ double sfml_mean(sf::Image& image, sf::IntRect dimension){
     return image_matrix.mean();
 }
 
-double sfml_variance(sf::Image& image,sf::IntRect dimension){
+double variance(sf::Image& image,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
             dimension.height = image.getSize().y;
             dimension.width = image.getSize().x;

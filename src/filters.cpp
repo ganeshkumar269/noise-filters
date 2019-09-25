@@ -72,20 +72,16 @@ bool minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
         return false;
     }
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
-    Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
+    Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Constant(width + boxSize - 1, height + boxSize - 1,255);
     for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
     for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
         imageMatrix(j,i) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r;
-    for(unsigned int i = int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
+    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
         unsigned int t = imageMatrix.block(j - int(boxSize/2), i - int(boxSize/2),boxSize,boxSize).minCoeff();
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(t,t,t,255));
     }
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
-        image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
-                        sf::Color(imageMatrix(j,i),imageMatrix(j,i),imageMatrix(j,i),255));
     return true;
 }
 
