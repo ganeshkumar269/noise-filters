@@ -19,7 +19,7 @@ int main(int argc,char** argv){
     sf::Text max,min,median,box,gauss,reset,mono;
     sf::Font MontserratBold;
     if(argc == 1){
-        std::cout<<"Too few arguments, proper command is --main.exe path_to_image path_to_font";
+        std::cout<<"Too few arguments, proper command is --> main.exe path_to_image path_to_font";
         exit(0);
     }
     std::string path_to_image;
