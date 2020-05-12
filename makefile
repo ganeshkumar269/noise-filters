@@ -9,8 +9,8 @@ main.o:
 	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC main.cpp -o ./obj/main.o $(LOCAL_INCLUDES) $(INCLUDES)
 filters.o:
 	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./src/filters.cpp -o ./obj/filters.o  $(LOCAL_INCLUDES) $(INCLUDES) 
-mysf.o:
-	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./src/mysf.cpp -o ./obj/mysf.o $(LOCAL_INCLUDES) $(INCLUDES)
+variance.o:
+	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./src/variance.cpp -o ./obj/variance.o $(LOCAL_INCLUDES) $(INCLUDES)
 rgbToGray.o:
 	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./src/rgbToGray.cpp -o ./obj/rgbToGray.o $(LOCAL_INCLUDES) $(INCLUDES)
 grayToMono.o:
@@ -18,8 +18,8 @@ grayToMono.o:
 mean.o:
 	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./src/mean.cpp -o ./obj/mean.o $(LOCAL_INCLUDES) $(INCLUDES)
 clean:
-	rm ./bin/main.o ./bin/filters.o ./bin/mysf.o
-test:	test.o	mysf.o rgbToGray.o grayToMono.o mean.o 
-	mingw32-g++.exe -std=c++14 -Wall -DSFML_STATIC ./obj/test.o ./obj/mysf.o  ./obj/rgbToGray.o ./obj/grayToMono.o ./obj/mean.o -o ./bin/test.exe $(LIBS) $(SFML_LIB_FILES) $(SFML_DEPENDENCIES)
+	rm ./obj/*.o
+test:	test.o	variance.o rgbToGray.o grayToMono.o mean.o 
+	mingw32-g++.exe -std=c++14 -Wall -DSFML_STATIC ./obj/test.o ./obj/variance.o  ./obj/rgbToGray.o ./obj/grayToMono.o ./obj/mean.o -o ./bin/test.exe $(LIBS) $(SFML_LIB_FILES) $(SFML_DEPENDENCIES)
 test.o:
 	mingw32-g++.exe -c -std=c++14 -Wall -DSFML_STATIC ./test/test.cpp  -o ./obj/test.o $(LOCAL_INCLUDES) $(INCLUDES)

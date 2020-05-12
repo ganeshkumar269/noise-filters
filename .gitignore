@@ -1,3 +1,4 @@
 .vscode/
 test/
 obj/
+bin/test.exe

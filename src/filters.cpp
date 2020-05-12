@@ -1,7 +1,5 @@
 #include "SFML/Graphics.hpp"
-#ifndef _GLIBCXX_IOSTREAM
-    #include<iostream>
-#endif
+#include<iostream>
 #include <Eigen/Dense>
 #include <algorithm>
 #include "gaussian_distribution.cpp"
@@ -18,6 +16,7 @@ bool boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     }
 
     if(!(boxSize&1)){
+        std::cerr << "Box Size must be odd" << endl;
         return false;
     }
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
@@ -158,11 +157,11 @@ bool gaussianNoiseAdder(sf::Image& image,float mean,float variance,sf::IntRect d
                             image.getPixel(i,j).r + (int)gaussian_noise[t],image.getPixel(i,j).r + (int)gaussian_noise[t]);
     
             if(std::get<0>(color) < 0 ) std::get<0>(color) = 0;
-            else if(std::get<0>(color) > 255) std::get<0>(color) = 255;
+            if(std::get<0>(color) > 255) std::get<0>(color) = 255;
             if(std::get<1>(color) < 0 ) std::get<1>(color) = 0;
-            else if(std::get<1>(color) > 255) std::get<1>(color) = 255;
+            if(std::get<1>(color) > 255) std::get<1>(color) = 255;
             if(std::get<2>(color) < 0 ) std::get<2>(color) = 0;
-            else if(std::get<2>(color) > 255) std::get<2>(color) = 255;
+            if(std::get<2>(color) > 255) std::get<2>(color) = 255;
             
             image.setPixel(i,j,sf::Color(std::get<0>(color),std::get<1>(color),std::get<2>(color)));
         } 
