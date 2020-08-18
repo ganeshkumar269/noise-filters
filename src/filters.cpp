@@ -1,14 +1,14 @@
 #include "SFML/Graphics.hpp"
-#include<iostream>
+#include <iostream>
 #include <Eigen/Dense>
 #include <algorithm>
 #include "gaussian_distribution.cpp"
-#include "filters.h"
+#include "filters.hpp"
+#include <vector>
 
 
 
-
-bool boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
+void boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -16,8 +16,8 @@ bool boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     }
 
     if(!(boxSize&1)){
-        std::cerr << "Box Size must be odd" << endl;
-        return false;
+        std::cerr << "Box Size must be odd" << std::endl;
+        // return false;
     }
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
     Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
@@ -31,11 +31,10 @@ bool boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(t,t,t,255));
     }   
-    return true;
 }
 
 
-bool maxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
+void maxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -43,7 +42,6 @@ bool maxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     }
 
     if(!(boxSize&1)){
-        return false;
     }
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
     Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
@@ -56,11 +54,10 @@ bool maxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(t,t,t,255));
     }        
-    return true;
 }
 
 
-bool minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
+void minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -68,7 +65,7 @@ bool minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     }
 
     if(!(boxSize&1)){
-        return false;
+        std::cerr << "Box Size must be odd" << std::endl;
     }
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
     Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Constant(width + boxSize - 1, height + boxSize - 1,255);
@@ -81,33 +78,47 @@ bool minFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
                         sf::Color(t,t,t,255));
     }
-    return true;
 }
 
 
-bool meanFilter(sf::Image& image,uint32_t boxSize, sf::IntRect dimension){
+void meanFilter(sf::Image& image,uint32_t boxSize, sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.width = image.getSize().x;
         dimension.height = image.getSize().y;
         dimension.top = dimension.left = 0;
     }
+    int halfSize = boxSize/2;
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
-    Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height + boxSize + 1,dimension.width + boxSize + 1);
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
-        image_matrix(i,j) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r; 
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
-        long mean = image_matrix.block(i - int(boxSize/2), j - int(boxSize/2),boxSize,boxSize).mean();
-        image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
-                        sf::Color(mean,mean,mean,255));
+    // Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height + boxSize + 1,dimension.width + boxSize + 1);
+    // for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    // for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
+    //     image_matrix(i,j) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r; 
+    // for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    // for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
+    //     long mean = image_matrix.block(i - int(boxSize/2), j - int(boxSize/2),boxSize,boxSize).mean();
+    //     image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
+    //                     sf::Color(mean,mean,mean,255));
+    // }
+
+    for(uint i =dimension.top+halfSize; i < height-halfSize;i++)
+    for(uint j =dimension.left+halfSize; i < width-halfSize;j++){
+        float sumOfWindow[3] = {0.0}; //array of 3, since 3 channels
+        for(uint m = i-halfSize; m <= i+halfSize;m++)
+        for(uint n = j-halfSize; n <= j+halfSize;n++){
+            sumOfWindow[0] += image.getPixel(m,n).r;
+            sumOfWindow[1] += image.getPixel(m,n).g;
+            sumOfWindow[2] += image.getPixel(m,n).b;
+        }
+        for(float& i : sumOfWindow) i/=boxSize;
+        image.setPixel(i,j,
+                sf::Color(sumOfWindow[0],sumOfWindow[1],sumOfWindow[2],image.getPixel(i,j).a)
+                );
     }
-    return true;
 }
 
 
 
-bool medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
+void medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -115,31 +126,48 @@ bool medianFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
     }
 
     if(!(boxSize&1)){
-        return false;
+        std::cerr << "Box Size must be odd" << std::endl;
     }
+    int halfSize = boxSize/2;
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
-    Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
-        imageMatrix(j,i) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r;    
+    // Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
+    // for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+    // for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
+    //     imageMatrix(j,i) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r;    
+    std::vector<std::vector<uint>> curr_window(boxSize*boxSize,std::vector<uint>(4));
     for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
     for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){
-        Eigen::MatrixXd temp =imageMatrix.block(j - int(boxSize/2), i - int(boxSize/2),boxSize,boxSize).transpose();
-        std::sort(temp.data(),temp.data() + boxSize*boxSize);
-        unsigned int t = temp.data()[int(boxSize*boxSize/2)];
+        // Eigen::MatrixXd temp =imageMatrix.block(j - int(boxSize/2), i - int(boxSize/2),boxSize,boxSize).transpose();
+        uint ind = 0;
+        for(uint m = i-halfSize; m <= i+halfSize;m++)
+        for(uint n = j-halfSize; n <= j+halfSize;n++){
+            curr_window[ind][0] = image.getPixel(m,n).r;
+            curr_window[ind][1] = image.getPixel(m,n).g;
+            curr_window[ind][2] = image.getPixel(m,n).b;
+            curr_window[ind][3] = image.getPixel(m,n).a;
+            ind++;
+            // curr_window.push_back({image.getPixel(m,n).r,image.getPixel(m,n).g,image.getPixel(m,n).b,image.getPixel(m,n).a});
+            // curr_window[0] += image.getPixel(m,n).r
+            // curr_window[1] += image.getPixel(m,n).g
+            // curr_window[2] += image.getPixel(m,n).b
+        }
+        uint newPixel[4] = {0};
+        for(uint itr =0 ; itr < 4; itr++){
+            std::sort(curr_window.begin(),curr_window.end(),[itr](std::vector<uint> x,std::vector<uint> y){return x[itr] < y[itr];});
+            newPixel[itr] = curr_window[boxSize*boxSize/2][itr];    
+        }
         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
-                        sf::Color(t,t,t,255));
+                        sf::Color(newPixel[0],newPixel[1],newPixel[2],newPixel[4]));
     }
-    return true;
 }
 
-bool gaussianNoiseAdder(sf::Image& image,float mean,float variance,sf::IntRect dimension){
+void gaussianNoiseAdder(sf::Image& image,float mean,float variance,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
         dimension.left = dimension.top = 0;
     }
-    std::cout<< dimension.top << " " << dimension.height << " " << dimension.left << " " << dimension.width <<std::endl;
+    // std::cout<< dimension.top << " " << dimension.height << " " << dimension.left << " " << dimension.width <<std::endl;
     unsigned int height = dimension.top + dimension.height , width = dimension.width + dimension.left;
     Eigen::MatrixXd image_matrix = Eigen::MatrixXd::Zero(dimension.height,dimension.width);
     for(unsigned int i = dimension.left ; i < width; i++)
@@ -165,5 +193,4 @@ bool gaussianNoiseAdder(sf::Image& image,float mean,float variance,sf::IntRect d
             
             image.setPixel(i,j,sf::Color(std::get<0>(color),std::get<1>(color),std::get<2>(color)));
         } 
-    return true;
 }

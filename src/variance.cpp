@@ -1,5 +1,5 @@
 #include "SFML/Graphics.hpp"
-#include "mysf.h"
+#include "mysf.hpp"
 #include <algorithm>
 #include <cmath>
 #include <future>
@@ -54,7 +54,7 @@ namespace mysf {
     }
 
     double standard_deviation(sf::Image& image,sf::IntRect dimension){
-        return sqrt((double)variance(image,dimension));
+        return std::sqrt((double)variance(image,dimension));
     }
 
 }

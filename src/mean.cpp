@@ -1,5 +1,5 @@
 #include "SFML/Graphics.hpp"
-#include "mysf.h"
+#include "mysf.hpp"
 #include <future>
 
 namespace mysf {

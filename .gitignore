@@ -1,4 +1,13 @@
-.vscode/
+.vscode
 test/
 obj/
 bin/test.exe
+log.txt
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+src/CMakeFiles
+src/cmake_install.cmake
+src/libsrc.a
+src/Makefile
+Makefile

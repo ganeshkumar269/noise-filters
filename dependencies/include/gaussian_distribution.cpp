@@ -1,12 +1,8 @@
-#ifndef _GLIBCXX_IOSTREAM
-    #include<iostream>
-#endif
 #include<random>
 #include<map>
-#include <vector>
-#include "vectorprint.cpp"
+#include<vector>
 namespace mystdlib{
-    std::vector<float> gaussian_distribution(float mean,float variance,long long count){
+    std::vector<float> gaussian_distribution(float mean,float variance,long count){
         std::random_device rd{};
         std::mt19937 mt{rd()};
         std::normal_distribution<> nd{mean,variance};

@@ -1,8 +1,9 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
+#include <cmath>
 #include "mytimer.cpp"
-#include "mysf.h"
-#include "filters.h"
+#include "mysf.hpp"
+#include "filters.hpp"
 int main(int argc,char** argv){
     std::cout<<"Hello, World!"<<std::endl;
     sf::RenderWindow window(sf::VideoMode(300,500),"New Window",sf::Style::Default);
@@ -152,9 +153,9 @@ int main(int argc,char** argv){
                     } else if(gauss.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        gaussianNoiseAdder(tmp,40,5);
+                        gaussianNoiseAdder(tmp,mysf::mean(tmp),std::sqrt(mysf::variance(tmp)));
                         orgImage = tmp;
-                        std::cout<<"Time taken for Box filter:";
+                        std::cout<<"Time taken for Gauss Noise:";
                     } else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
                         if(mousePosition.x < 150)
                             boxSize = boxSize < 5 ? 3 : boxSize - 2;
