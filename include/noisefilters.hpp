@@ -1,5 +1,5 @@
-#ifndef FILTERS_HPP
-    #define FILTERS_HPP
+#ifndef NOISEFILTERS_HPP
+    #define NOISEFILTERS_HPP
 	#include <SFML/Graphics.hpp>
     #define uint uint32_t
     void boxFilter(sf::Image& ,unsigned int =3,sf::IntRect = {-1,-1,-1,-1});

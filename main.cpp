@@ -1,9 +1,15 @@
-#include "SFML/Graphics.hpp"
 #include <iostream>
 #include <cmath>
+
+#include "SFML/Graphics.hpp"
+#include "SFML/Window.hpp"
+
 #include "mytimer.cpp"
+
 #include "mysf.hpp"
-#include "filters.hpp"
+#include "noisefilters.hpp"
+#include "noisemodels.hpp"
+
 int main(int argc,char** argv){
     std::cout<<"Hello, World!"<<std::endl;
     sf::RenderWindow window(sf::VideoMode(300,500),"New Window",sf::Style::Default);
@@ -18,70 +24,71 @@ int main(int argc,char** argv){
     sf::Image image,refImage;
     sf::Image orgImage;
     sf::Text max,min,median,box,gauss,reset,mono;
-    sf::Font MontserratBold;
-    if(argc == 1){
-        std::cout<<"Too few arguments, proper command is --> main.exe path_to_image path_to_font";
-        exit(0);
-    }
+    sf::Font font;
     std::string path_to_image;
     std::string path_to_font;
+    if(argc == 1){
+        std::cout<<"Proper command is --> main.exe path_to_image path_to_font, using defualt values";
+        path_to_image = "default.jpg";
+        path_to_font = "defaut.otf";
+    }
     if(std::string(argv[1]) == "-d"){
-        path_to_image = "./resources/car.jpg";
-        path_to_font = "Fonts/Montserrat-Bold.otf";
+        path_to_image = "defaut.jpg";
+        path_to_font = "defaut.otf";
     } else {
         path_to_image = argv[1];
         path_to_font = argv[2];
     }
+    
+    if(!font.loadFromFile(path_to_font.c_str()))
+        std::cout<<"Filed to load Font"<<std::endl;
+    if (!image.loadFromFile(path_to_image.c_str()))
+        std::cout<<"Error in opening Image"<<std::endl;
+    std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
+
     max.setString("Max Filter");
-    max.setFont(MontserratBold);
+    max.setFont(font);
     max.setFillColor(sf::Color::White);
     max.setCharacterSize(25);
     max.setPosition(0,300);
 
     min.setString("Min Filter");
-    min.setFont(MontserratBold);
+    min.setFont(font);
     min.setFillColor(sf::Color::White);
     min.setCharacterSize(25);
     min.setPosition(150,300);
 
     median.setString("Med Filter");
-    median.setFont(MontserratBold);
+    median.setFont(font);
     median.setFillColor(sf::Color::White);
     median.setCharacterSize(25);
     median.setPosition(0,350);
 
     box.setString("Box Filter");
-    box.setFont(MontserratBold);
+    box.setFont(font);
     box.setFillColor(sf::Color::White);
     box.setCharacterSize(25);
     box.setPosition(150,350);
 
     gauss.setString("Gauss");
-    gauss.setFont(MontserratBold);
+    gauss.setFont(font);
     gauss.setFillColor(sf::Color::White);
     gauss.setCharacterSize(25);
     gauss.setPosition(0,400);
 
     mono.setString("Mono");
-    mono.setFont(MontserratBold);
+    mono.setFont(font);
     mono.setFillColor(sf::Color::White);
     mono.setCharacterSize(25);
     mono.setPosition(150,400);
 
     reset.setString("Reset");
-    reset.setFont(MontserratBold);
+    reset.setFont(font);
     reset.setFillColor(sf::Color::White);
     reset.setCharacterSize(25);
     reset.setPosition(0,450);
 
-    if(!MontserratBold.loadFromFile(path_to_font.c_str()))
-        std::cout<<"Filed to load Font"<<std::endl;
-    if (!image.loadFromFile(path_to_image.c_str()))
-        std::cout<<"Error in opening Image"<<std::endl;
-    std::cout<<"Image size : "<<image.getSize().x<<" "<<image.getSize().y<<std::endl;
     
-
-
     if(!arrow_texture.loadFromFile("./resources/arrow_right.jpg"))
         std::cout << "Error loading arrow texture " << std::endl;
     arrow_right.setTexture(arrow_texture);

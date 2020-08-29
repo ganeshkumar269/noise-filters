@@ -1,5 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "mysf.hpp"
+#include "misc.hpp"
 #include <future>
 
 namespace mysf {
@@ -26,6 +27,9 @@ namespace mysf {
         sf::IntRect dim2 = {dimension.left+dimension.width/2,dimension.top,dimension.width/2,dimension.height/2};
         sf::IntRect dim3 = {dimension.left,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
         sf::IntRect dim4 = {dimension.left+dimension.width/2,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
+
+        int coreCount = getCoreCount();
+        
 
         std::future<double> t1 = std::async(std::launch::async, mean,std::ref(image),dim1);
         std::future<double> t2 = std::async(std::launch::async, mean,std::ref(image),dim2);

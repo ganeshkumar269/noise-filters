@@ -10,4 +10,6 @@ src/CMakeFiles
 src/cmake_install.cmake
 src/libsrc.a
 src/Makefile
+dependencies/include/SFML-old/
 Makefile
+libmain.a
