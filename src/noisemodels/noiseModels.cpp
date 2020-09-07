@@ -21,11 +21,12 @@ std::vector<float> rayleighNoise(float stddev,uint32_t _sz){
         nums[i] = nd(mt);
     return nums;
 }
-std::vector<int> uniformNoise(uint32_T _sz){
-    vector<int> res(_sz);
+std::vector<int> uniformNoise(uint32_t _sz){
+    std::vector<int> res(_sz);
     std::random_device rd{};
     std::mt19937 mt{rd()};
-    std::uniform_int_distribution ud(0,256);
+    std::uniform_int_distribution<> ud(0,256);
     for(size_t i =0;i <_sz;i++) res.push_back(ud(mt));
+    return res;
 }
 // std::vector<float> erlangNoise(){}

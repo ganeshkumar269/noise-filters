@@ -27,14 +27,15 @@ int main(int argc,char** argv){
     sf::Font font;
     std::string path_to_image;
     std::string path_to_font;
+    std::cout << "argc: " << argc <<std::endl;
     if(argc == 1){
         std::cout<<"Proper command is --> main.exe path_to_image path_to_font, using defualt values";
-        path_to_image = "default.jpg";
-        path_to_font = "defaut.otf";
+        path_to_image = "./resources/default.jpg";
+        path_to_font = "./Fonts/default.otf";
     }
-    if(std::string(argv[1]) == "-d"){
-        path_to_image = "defaut.jpg";
-        path_to_font = "defaut.otf";
+    else if(argv[1][0] == '-' && argv[1][1] == 'd'){
+        path_to_image = "./resources/defaut.jpg";
+        path_to_font = "./Fonts/defaut.otf";
     } else {
         path_to_image = argv[1];
         path_to_font = argv[2];
@@ -100,12 +101,12 @@ int main(int argc,char** argv){
 
     orgImage = image;
     refImage = image;
-    {
-        Timer timer;
-        mysf::rgbToGray(orgImage);
-        mysf::rgbToGray(refImage);
-        std::cout << "orgImage converted to gray in : ";
-    }
+    // {
+    //     Timer timer;
+    //     mysf::rgbToGray(orgImage);
+    //     mysf::rgbToGray(refImage);
+    //     std::cout << "orgImage converted to gray in : ";
+    // }
     unsigned int boxSize = 3;
     std::cout<<"Window Opened"<<std::endl;
 
@@ -155,7 +156,7 @@ int main(int argc,char** argv){
                     } else if(box.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        boxFilter(tmp,boxSize);
+                        apply_filter(tmp,boxFilter);
                         std::cout<<"Time taken for Box filter:";
                     } else if(gauss.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;

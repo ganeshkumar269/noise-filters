@@ -7,31 +7,45 @@
 #include <vector>
 
 
-
-void boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
-    if(dimension.height == -1 or dimension.width == -1){
-        dimension.height = image.getSize().y;
-        dimension.width = image.getSize().x;
-        dimension.left = dimension.top = 0;
+sf::Color boxFilter(sf::Image& image,uint32_t boxSize,uint32_t x,uint32_t y){
+    float r=0,g=0,b=0,a=0;
+    for(uint m= x - boxSize/2; m < x + boxSize/2;m++){
+        for(uint n= y-boxSize/2; n < y+boxSize/2;n++){
+            r += image.getPixel(m,n).r/(float)(boxSize*boxSize);
+            g += image.getPixel(m,n).g/(float)(boxSize*boxSize);
+            b += image.getPixel(m,n).b/(float)(boxSize*boxSize);
+            a += image.getPixel(m,n).a/(float)(boxSize*boxSize);
+        }        
     }
-
-    if(!(boxSize&1)){
-        std::cerr << "Box Size must be odd" << std::endl;
-        // return false;
-    }
-    unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
-    Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
-        imageMatrix(j,i) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r;
-    for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
-    for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){ 
-    unsigned int t = imageMatrix.block(j - int(boxSize/2), i - int(boxSize/2),boxSize,boxSize)
-                                        .sum()/float(boxSize*boxSize);
-        image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
-                        sf::Color(t,t,t,255));
-    }   
+    if(r > 256 || g > 256 || b > 256 || a > 256)
+        std::cout << "filters.cpp:Exceeds limits" << std::endl;
+    return sf::Color(r,g,b,a);
 }
+
+// void boxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){
+//     if(dimension.height == -1 or dimension.width == -1){
+//         dimension.height = image.getSize().y;
+//         dimension.width = image.getSize().x;
+//         dimension.left = dimension.top = 0;
+//     }
+
+//     if(!(boxSize&1)){
+//         std::cerr << "Box Size must be odd" << std::endl;
+//         // return false;
+//     }
+//     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
+//     Eigen::MatrixXd imageMatrix = Eigen::MatrixXd::Zero(width + boxSize - 1, height + boxSize - 1);
+//     for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+//     for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++)
+//         imageMatrix(j,i) = image.getPixel(j - int(boxSize/2),i - int(boxSize/2)).r;
+//     for(unsigned int i = dimension.top + int(boxSize/2) ;i < height + int(boxSize/2); i++)
+//     for(unsigned int j = dimension.left + int(boxSize/2) ; j < width + int(boxSize/2) ; j++){ 
+//     unsigned int t = imageMatrix.block(j - int(boxSize/2), i - int(boxSize/2),boxSize,boxSize)
+//                                         .sum()/float(boxSize*boxSize);
+//         image.setPixel(j - int(boxSize/2),i - int(boxSize/2) , 
+//                         sf::Color(t,t,t,255));
+//     }   
+// }
 
 
 void maxFilter(sf::Image& image,unsigned int boxSize,sf::IntRect dimension){

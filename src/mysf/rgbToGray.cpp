@@ -1,6 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "mysf.hpp"
-#include <thread>
+// #include <thread>
 
 namespace mysf {
     void rgbToGray(sf::Image& image, sf::IntRect dimension){
@@ -19,25 +19,25 @@ namespace mysf {
     }
 
 
-    void rgbToGray_MT(sf::Image& image, sf::IntRect dimension){
-        if(dimension.height == -1 or dimension.width == -1){
-            dimension.height = image.getSize().y;
-            dimension.width = image.getSize().x;
-            dimension.left = dimension.top = 0;
-        }
-        sf::IntRect dim1 = {dimension.left,dimension.top,dimension.width/2,dimension.height/2};
-        sf::IntRect dim2 = {dimension.left+dimension.width/2,dimension.top,dimension.width/2,dimension.height/2};
-        sf::IntRect dim3 = {dimension.left,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
-        sf::IntRect dim4 = {dimension.left+dimension.width/2,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
+    // void rgbToGray_MT(sf::Image& image, sf::IntRect dimension){
+    //     if(dimension.height == -1 or dimension.width == -1){
+    //         dimension.height = image.getSize().y;
+    //         dimension.width = image.getSize().x;
+    //         dimension.left = dimension.top = 0;
+    //     }
+    //     sf::IntRect dim1 = {dimension.left,dimension.top,dimension.width/2,dimension.height/2};
+    //     sf::IntRect dim2 = {dimension.left+dimension.width/2,dimension.top,dimension.width/2,dimension.height/2};
+    //     sf::IntRect dim3 = {dimension.left,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
+    //     sf::IntRect dim4 = {dimension.left+dimension.width/2,dimension.top+dimension.height/2,dimension.width/2,dimension.height/2};
         
-        std::thread t1(rgbToGray,std::ref(image),dim1);
-        std::thread t2(rgbToGray,std::ref(image),dim2);
-        std::thread t3(rgbToGray,std::ref(image),dim3);
-        std::thread t4(rgbToGray,std::ref(image),dim4);
+    //     std::thread t1(rgbToGray,std::ref(image),dim1);
+    //     std::thread t2(rgbToGray,std::ref(image),dim2);
+    //     std::thread t3(rgbToGray,std::ref(image),dim3);
+    //     std::thread t4(rgbToGray,std::ref(image),dim4);
         
-        t1.join();
-        t2.join();
-        t3.join();
-        t4.join();
-    }
+    //     t1.join();
+    //     t2.join();
+    //     t3.join();
+    //     t4.join();
+    // }
 }
