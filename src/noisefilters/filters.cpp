@@ -7,6 +7,17 @@
 #include <vector>
 
 
+void boxFilterReducer(float& x,uint y,uint boxSize){
+    x += y/(float)(boxSize*boxSize);
+}
+void maxFilterReducer(float& x,uint y,uint boxSize){
+    x = std::max(x,y/(float)(boxSize*boxSize));
+}
+void minFilterReducer(float& x,uint y,uint boxSize){
+    if(x == 0) x = 1<<8;
+    x = std::min(x,y/(float)(boxSize*boxSize));
+}
+
 sf::Color boxFilter(sf::Image& image,uint32_t boxSize,uint32_t x,uint32_t y){
     float r=0,g=0,b=0,a=0;
     for(uint m= x - boxSize/2; m < x + boxSize/2;m++){

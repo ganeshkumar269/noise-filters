@@ -1,6 +1,6 @@
 #include "noisefilters.hpp"
 #include <iostream>
-void apply_filter(sf::Image& image,sf::Color (*filter)(sf::Image&,uint32_t,uint32_t,uint32_t),unsigned int boxSize,sf::IntRect dimension){
+void apply_filter(sf::Image& image,void (*reducer)(float&,uint32_t,uint32_t),unsigned int boxSize,sf::IntRect dimension){
     if(dimension.height == -1 or dimension.width == -1){
         dimension.height = image.getSize().y;
         dimension.width = image.getSize().x;
@@ -15,7 +15,16 @@ void apply_filter(sf::Image& image,sf::Color (*filter)(sf::Image&,uint32_t,uint3
     unsigned int height = dimension.height + dimension.top , width = dimension.width + dimension.left;
     for(unsigned int y = dimension.top + int(boxSize/2) ;y < height - int(boxSize/2); y++)
     for(unsigned int x = dimension.left + int(boxSize/2) ; x < width - int(boxSize/2) ; x++){
-        image.setPixel(x,y,filter(tmp,boxSize,x,y));
+        float r=0,g=0,b=0,a=tmp.getPixel(x,y).a;
+        for(uint m= x - boxSize/2; m < x + boxSize/2;m++){
+            for(uint n= y-boxSize/2; n < y+boxSize/2;n++){
+                reducer(r,tmp.getPixel(m,n).r,boxSize);
+                reducer(g,tmp.getPixel(m,n).g,boxSize);
+                reducer(b,tmp.getPixel(m,n).b,boxSize);
+                // reducer(a,tmp.getPixel(m,n).a,boxSize);
+            }     
+        }
+        image.setPixel(x,y,sf::Color(r,g,b,a));
     }   
 }
 

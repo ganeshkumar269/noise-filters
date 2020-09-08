@@ -4,7 +4,7 @@
 // #include <future>
 
 namespace mysf {
-    double mean(sf::Image& image, sf::IntRect dimension){
+    double mean(sf::Image& image,int ch,sf::IntRect dimension){
         if(dimension.height == -1 or dimension.width == -1){
                 dimension.height = image.getSize().y;
                 dimension.width = image.getSize().x;
@@ -13,7 +13,23 @@ namespace mysf {
         double sum = 0.0;
         for(unsigned int i = dimension.top ;i < (uint32_t)dimension.top +  dimension.height; i++)
             for(unsigned int j = dimension.left ; j < (uint32_t)dimension.left + dimension.width ; j++)
-                sum += image.getPixel(j,i).r*0.34 + image.getPixel(j,i).g*0.33 + image.getPixel(j,i).b*0.33;
+                switch(ch){
+                    case -1:
+                        sum += image.getPixel(j,i).r*0.34 + image.getPixel(j,i).g*0.33 + image.getPixel(j,i).b*0.33;
+                        break;
+                    case 0 :
+                        sum += image.getPixel(j,i).r;
+                        break;
+                    case 1 :
+                        sum += image.getPixel(j,i).g;
+                        break;
+                    case 2 :
+                        sum += image.getPixel(j,i).b;
+                        break;
+                    case 3 :
+                        sum += image.getPixel(j,i).a;
+                        break;
+                }
         return sum/(dimension.height*dimension.width);
     }
 

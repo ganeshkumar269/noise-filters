@@ -141,30 +141,38 @@ int main(int argc,char** argv){
                     if(max.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        maxFilter(tmp,boxSize);
+                        // maxFilter(tmp,boxSize);
+                        apply_filter(tmp,maxFilterReducer);
                         std::cout<<"Time taken for Max filter:";
                     } else if(min.getGlobalBounds().contains(translatedPos)and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        minFilter(tmp,boxSize);
+                        // minFilter(tmp,boxSize);
+                        apply_filter(tmp,minFilterReducer);
                         std::cout<<"Time taken for Min filter:";
                     } else if(median.getGlobalBounds().contains(translatedPos)and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        meanFilter(tmp,boxSize);
+                        medianFilter(tmp,boxSize);
                         std::cout<<"Time taken for Median filter:";
                     } else if(box.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        apply_filter(tmp,boxFilter);
+                        apply_filter(tmp,boxFilterReducer);
                         std::cout<<"Time taken for Box filter:";
                     } else if(gauss.getGlobalBounds().contains(translatedPos) and flag){
                         Timer timer;
                         std::cout<<"Filter Started."<<std::endl;
-                        gaussianNoiseAdder(tmp,mysf::mean(tmp),std::sqrt(mysf::variance(tmp)));
+                        addGaussianNoise(tmp);
                         orgImage = tmp;
                         std::cout<<"Time taken for Gauss Noise:";
-                    } else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
+                    } else if(gauss.getGlobalBounds().contains(translatedPos) and flag){
+                        Timer timer;
+                        std::cout<<"Filter Started."<<std::endl;
+                        addUniformNoise(tmp);
+                        orgImage = tmp;
+                        std::cout<<"Time taken for Uniform Noise:";
+                    }else if(sprite.getGlobalBounds().contains(translatedPos) and flag){
                         if(mousePosition.x < 150)
                             boxSize = boxSize < 5 ? 3 : boxSize - 2;
                         else

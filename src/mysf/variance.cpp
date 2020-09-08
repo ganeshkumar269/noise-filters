@@ -6,7 +6,7 @@
 
 namespace mysf {
     //Variance = Sigma(x*(x-2mean) + mean^2) = Sigma(x*(x-2mean)) + Sigma(mean*mean)
-    double firstPartOfSigma(sf::Image& image,sf::IntRect dimension,double mean){
+    double firstPartOfSigma(sf::Image& image,int ch, sf::IntRect dimension,double mean){
         if(dimension.height == -1 or dimension.width == -1){
                 dimension.height = image.getSize().y;
                 dimension.width = image.getSize().x;
@@ -15,7 +15,25 @@ namespace mysf {
         double sum = 0.0;
         for(unsigned int i = dimension.top ;i < (uint32_t)dimension.top +  dimension.height; i++)
             for(unsigned int j = dimension.left ; j < (uint32_t)dimension.left + dimension.width ; j++){
-                double t = image.getPixel(j,i).r*0.34 + image.getPixel(j,i).g*0.33 + image.getPixel(j,i).b*0.33;
+                double t;
+                switch(ch){
+                    case -1:
+                        t = image.getPixel(j,i).r*0.34 + image.getPixel(j,i).g*0.33 + image.getPixel(j,i).b*0.33;
+                        break;
+                    case 0 :
+                        t = image.getPixel(j,i).r;
+                        break;
+                    case 1 :
+                        t = image.getPixel(j,i).g;
+                        break;
+                    case 2 :
+                        t = image.getPixel(j,i).b;
+                        break;
+                    case 3 :
+                        t = image.getPixel(j,i).a;
+                        break;
+                }
+                
                 sum += t*(t-2*mean);
             }
         return sum;
@@ -23,14 +41,14 @@ namespace mysf {
 
 
 
-    double variance(sf::Image& image,sf::IntRect dimension,double mean){
+    double variance(sf::Image& image,int ch,sf::IntRect dimension,double mean){
         if(dimension.height == -1 or dimension.width == -1){
                 dimension.height = image.getSize().y;
                 dimension.width = image.getSize().x;
                 dimension.left = dimension.top = 0;
         } 
-        if(mean == -1)  mean = mysf::mean(image,dimension);
-        double firstPart = firstPartOfSigma(image,dimension,mean);
+        if(mean == -1)  mean = mysf::mean(image,ch,dimension);
+        double firstPart = firstPartOfSigma(image,ch,dimension,mean);
         double secondPart = dimension.height*dimension.width*mean*mean;
         return (firstPart+secondPart)/(dimension.height*dimension.width);
     }

@@ -6,9 +6,9 @@
         void rgbToGray_MT(sf::Image& , sf::IntRect = {-1,-1,-1,-1});
         void grayToMono(sf::Image& ,unsigned int = 127, sf::IntRect = {-1,-1,-1,-1});
         void grayToMono_MT(sf::Image& ,unsigned int = 127, sf::IntRect = {-1,-1,-1,-1});
-        double mean(sf::Image& , sf::IntRect = {-1,-1,-1,-1});
+        double mean(sf::Image& ,int =-1, sf::IntRect = {-1,-1,-1,-1});
         double mean_MT(sf::Image& , sf::IntRect = {-1,-1,-1,-1});
-        double variance(sf::Image& ,sf::IntRect = {-1,-1,-1,-1},double = -1);
+        double variance(sf::Image& ,int =-1,sf::IntRect = {-1,-1,-1,-1},double = -1);
         double variance_MT(sf::Image& ,sf::IntRect = {-1,-1,-1,-1});
     }
 #endif
